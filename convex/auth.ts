@@ -1,19 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-
-/* ---------- Helpers ---------- */
-
-function toHex(buffer: ArrayBuffer) {
-  return [...new Uint8Array(buffer)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-async function hashPassword(password: string) {
-  const data = new TextEncoder().encode(password);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return toHex(hash);
-}
+import { toHex, hashPassword } from "./authHelpers";
 
 /* ---------- Signup ---------- */
 

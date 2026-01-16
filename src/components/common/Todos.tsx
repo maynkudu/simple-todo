@@ -1,7 +1,9 @@
+import { useAuth } from "@/hooks/useAuth";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { useQuery, useMutation } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export interface Todo {
   _id: Id<"todos">;
@@ -16,17 +18,19 @@ export default function Todos() {
   const add = useMutation(api.todos.add);
   const toggle = useMutation(api.todos.toggle);
 
+  const { token } = useAuth();
+
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const loading = todos === undefined;
 
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
 
-  if (!token) return <p>Not authenticated</p>;
+  // if (!token) return null;
 
   return (
-    <div className="min-h-screen  flex justify-center p-4">
+    <div className="min-h-screen  flex justify-center p-4 pt-20">
       <div className="w-full h-max bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

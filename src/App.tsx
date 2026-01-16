@@ -1,19 +1,15 @@
-import { useState } from "react";
-import { api } from "convex/_generated/api";
-import { useQuery } from "convex/react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Todos from "./components/common/Todos";
+import { useAuth } from "./hooks/useAuth";
+import Navbar from "./components/common/Navbar";
 import "./index.css";
+import { Console, Effect } from "effect";
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("token"),
-  );
+  const { status, login } = useAuth();
 
-  const user = useQuery(api.auth.getUserByToken, token ? { token } : "skip");
-
-  // Loading and checking for session
-  if (user === undefined) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-500 flex items-center justify-center">
         Checking session...
@@ -21,22 +17,36 @@ export default function App() {
     );
   }
 
-  // Not logged in
-  if (user === null) {
-    return (
-      <Login
-        onAuth={(t) => {
-          localStorage.setItem("token", t);
-          setToken(t);
-        }}
-      />
-    );
-  }
+  const consoleProgram = Console.log("Status:", status);
+  Effect.runSync(consoleProgram);
 
-  // Logged in
   return (
-    <div className="flex justify-center items-center bg-zinc-950 text-zinc-100">
-      <Todos />
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex justify-center items-center">
+      <Navbar />
+
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            status === "authenticated" ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Login onAuth={login} />
+            )
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            status === "authenticated" ? (
+              <Todos />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      </Routes>
     </div>
   );
 }

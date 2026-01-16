@@ -9,6 +9,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import App from "./App";
+import { BrowserRouter } from "react-router-dom";
 
 const elem = document.getElementById("root")!;
 
@@ -17,7 +18,9 @@ const convex = new ConvexReactClient("https://enchanted-ram-32.convex.cloud");
 const app = (
   <StrictMode>
     <ConvexProvider client={convex}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ConvexProvider>
   </StrictMode>
 );

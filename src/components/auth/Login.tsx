@@ -1,10 +1,12 @@
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ onAuth }: { onAuth: (t: string) => void }) {
   const login = useMutation(api.auth.login);
   const signup = useMutation(api.auth.signup);
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +23,7 @@ export default function Login({ onAuth }: { onAuth: (t: string) => void }) {
       if (mode === "login") {
         const res = await login({ username, password });
         onAuth(res.token);
+        navigate("/", { replace: true });
       } else {
         await signup({ username, password });
         setMode("login");
