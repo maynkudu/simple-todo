@@ -16,12 +16,24 @@ export const list = query({
 });
 
 export const add = mutation({
-  args: { text: v.string() },
+  args: { text: v.string(), token: v.string() },
   handler: async (ctx, args) => {
+    const sessionProgram = Effect.tryPromise(() => {
+      return ctx.db
+        .query("sessions")
+        .withIndex("by_token", (q) => q.eq("token", args.token))
+        .first();
+    });
+
+    const session = await Effect.runPromise(sessionProgram);
+
+    if (!session) throw new Error("Invalid token");
+
     const program = Effect.tryPromise(() => {
       return ctx.db.insert("todos", {
         text: args.text,
         completed: false,
+        userId: session.userId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });

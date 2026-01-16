@@ -21,6 +21,10 @@ export default function Todos() {
 
   const loading = todos === undefined;
 
+  const token = localStorage.getItem("token");
+
+  if (!token) return <p>Not authenticated</p>;
+
   return (
     <div className="min-h-screen  flex justify-center p-4">
       <div className="w-full h-max bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6">
@@ -39,7 +43,7 @@ export default function Todos() {
             if (!text.trim()) return;
 
             setSubmitting(true);
-            await add({ text });
+            await add({ token, text });
             setText("");
             setSubmitting(false);
           }}
